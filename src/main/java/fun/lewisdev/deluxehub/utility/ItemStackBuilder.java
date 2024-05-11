@@ -2,11 +2,13 @@ package fun.lewisdev.deluxehub.utility;
 
 import fun.lewisdev.deluxehub.DeluxeHubPlugin;
 import fun.lewisdev.deluxehub.hook.hooks.head.HeadHook;
+import fun.lewisdev.deluxehub.utility.universal.XInfinity;
 import fun.lewisdev.deluxehub.utility.universal.XMaterial;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -177,7 +179,7 @@ public class ItemStackBuilder {
         final ItemMeta meta = ITEM_STACK.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         ITEM_STACK.setItemMeta(meta);
-        ITEM_STACK.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        ITEM_STACK.addUnsafeEnchantment(XInfinity.INFINITY, 1);
         return this;
     }
 
