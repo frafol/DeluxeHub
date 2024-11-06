@@ -28,10 +28,7 @@ import com.google.common.cache.CacheBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Note;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -889,7 +886,7 @@ public enum XSound {
     /**
      * Guava (Google Core Libraries for Java)'s cache for performance and timed caches.
      * Caches the parsed {@link Sound} objects instead of string. Because it has to go through catching exceptions again
-     * since {@link Sound} class doesn't have a method like {@link org.bukkit.Material#getMaterial(String)}.
+     * since {@link Sound} class doesn't have a method like {@link Material#getMaterial(String)}.
      * So caching these would be more efficient.
      *
      * @since 2.0.0
@@ -1091,22 +1088,30 @@ public enum XSound {
     public Sound parseSound() {
         com.google.common.base.Optional<Sound> cachedSound = CACHE.getIfPresent(this);
         if (cachedSound != null) return cachedSound.orNull();
-        com.google.common.base.Optional<Sound> sound;
+
 
         // Since Sound class doesn't have a getSound() method we'll use Guava so
         // it can cache it for us.
-        sound = Enums.getIfPresent(Sound.class, this.name());
-
-        if (!sound.isPresent()) {
+        Sound sound = null;
+        try {
+            sound = Sound.valueOf(this.name());
+        } catch (IllegalArgumentException e) {
             for (String legacy : this.legacy) {
-                sound = Enums.getIfPresent(Sound.class, legacy);
-                if (sound.isPresent()) break;
+                try {
+                    sound = Sound.valueOf(legacy);
+                } catch (IllegalArgumentException ignored) {}
             }
         }
 
         // Put nulls too, because there's no point of parsing them again if it's going to give us null again.
-        CACHE.put(this, sound);
-        return sound.orNull();
+
+        if (sound == null) {
+            CACHE.put(this, com.google.common.base.Optional.absent());
+            return null;
+        }
+
+        CACHE.put(this, com.google.common.base.Optional.of(sound));
+        return sound;
     }
 
     /**
